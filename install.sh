@@ -8,4 +8,6 @@ install_deepl_cli () {
     echo "run \`deepl --help\` for info on usage and shell completions"
 }
 
-install_deepl_cli
+# install_deepl_cli
+
+echo "hello there!"
