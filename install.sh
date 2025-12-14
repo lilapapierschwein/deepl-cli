@@ -13,7 +13,8 @@ install_deepl_cli () {
 
     local install_path=/usr/local/bin
     
-    curl -o /usr/local/bin/deepl -L https://github.com/lilapapierschwein/deepl-cli/raw/refs/heads/installer/bin/deepl
+    curl -O https://github.com/lilapapierschwein/deepl-cli/raw/refs/heads/installer/bin/deepl
+    mv deepl install_path
 
     echo "application successfully installed at $install_path/deepl"
     echo "run \`deepl --help\` for info on usage and shell completions"
