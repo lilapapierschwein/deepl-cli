@@ -1,13 +1,26 @@
-# install_deepl_cli () {
-#     local install_path=/usr/local/bin
-#
-#     go build $PWD/deepl.go
-#     sudo ln -s $PWD/deepl $install_path
-#
-#     echo "application successfully installed at $install_path/deepl"
-#     echo "run \`deepl --help\` for info on usage and shell completions"
-# }
+install_deepl_cli () {
+    echo "running installer for deepl-cli." 
+    echo "this will downlad the application's binary onto your system."
+    echo ""
 
-# install_deepl_cli
+    read -p "Proceed? [Y/n]: " USER_OKAY
+    echo ""
 
-echo "hello there!"
+    if [[ $USER_OKAY = "n" || $USER_OKAY = "no" || $USER_OKAY = "N" ]]; then
+        echo "installation cancelled."
+        return 0
+    fi
+
+    local install_path=/usr/local/bin
+    local bin_file_url="https://github.com/lilapapierschwein/deepl-cli/raw/refs/heads/installer/bin/deepl"
+    
+    sudo cd install_path && \
+        curl -O bin_file_url
+
+    echo "application successfully installed at $install_path/deepl"
+    echo "run \`deepl --help\` for info on usage and shell completions"
+    
+    return 0
+}
+
+install_deepl_cli
