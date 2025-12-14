@@ -15,7 +15,7 @@ install_deepl_cli () {
     local bin_file_url="https://github.com/lilapapierschwein/deepl-cli/raw/refs/heads/installer/bin/deepl"
     
     sudo cd install_path && \
-        curl -O bin_file_url
+        curl -o /usr/local/bin/deepl bin_file_url
 
     echo "application successfully installed at $install_path/deepl"
     echo "run \`deepl --help\` for info on usage and shell completions"
