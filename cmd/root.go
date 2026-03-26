@@ -75,8 +75,12 @@ var webCMD = &cobra.Command{
 			return err
 		}
 
-		target := []string{deeplUrl, "#", from, "/", to, "/", args[0]}
+		text := args[0]
+		textEscaped := utils.UrlEscape(text)
+
+		target := []string{deeplUrl, "#", from, "/", to, "/", textEscaped}
 		var targetUrl string = strings.Join(target, "")
+
 		browser.OpenURL(targetUrl)
 
 		return nil
