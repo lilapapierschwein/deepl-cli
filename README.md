@@ -20,3 +20,17 @@ cd $INSTALL_DIRECTORY && ./install.sh
   - fish
   - powershell
   - zsh
+
+- use
+
+## motivation
+
+`deepl-cli` is a fast and lightweight command line interface that utilizes [deepl.com](https://deepl.com)'s web app for translations.
+
+while eliminating the need for an api-key, this comes with a set of restrictions on usage:
+
+- no account: 1.5k characters per translation
+- free account: 5k characters per translation
+- pro account: 20k characters per translation
+
+despite those restrictions, the goal is to provide an easy-to-use, data-efficient translation tool for short- to mid-sized text.
