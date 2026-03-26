@@ -17,43 +17,8 @@ var rootCMD = &cobra.Command{
 	Short: "interact with deepl via cli",
 	Long:  "interact with deepl via cli",
 	Run: func(cmd *cobra.Command, args []string) {
-		langs := []string{
-			"Arabic: ar",
-			"Bulgarian: bg",
-			"Chinese: zh",
-			"Chinese (simplified): zh-hans",
-			"Chinese (traditional): zh-hant",
-			"Czech: cs",
-			"Danish: da",
-			"Dutch: nl",
-			"English: en",
-			"English (British): en-gb",
-			"English (America): en-us",
-			"Estonian: et",
-			"Finnish: fi",
-			"French: fr",
-			"German: de",
-			"Greek: el",
-			"Hungarian: hu",
-			"Indonesian: id",
-			"Italian: it",
-			"Japanese: ja",
-			"Korean: ko",
-			"Latvian: lv",
-			"Lithuanian: lt",
-			"Norwegian (bikmål): nb",
-			"Polish: pl",
-			"Portuguese: pt-pt",
-			"Portuguese (Brazilian): pt-br",
-			"Romanian: ro",
-			"Russian: ru",
-			"Slovak: sk",
-			"Slovenian: sl",
-			"Spanish: es",
-			"Swedish: sv",
-			"Turkish: tr",
-			"Ukranian: uk",
-		}
+		var langs []string = utils.GetAvailableLanguages()
+
 		if showLangs {
 			for _, v := range langs {
 				fmt.Println(v)
@@ -75,8 +40,8 @@ func checkLangs(from string, to string, opts []string) error {
 	if !utils.IsInArray(from, opts) {
 		return fmt.Errorf(
 			fmt.Sprintf(
-				`'%s' not in language options
-Run 'deepl -L' to see available language codes
+				`invalid language code on source ('%s')
+Run 'deepl -L,--languages' to get a list of available languages and codes
 `,
 				from,
 			),
@@ -85,8 +50,8 @@ Run 'deepl -L' to see available language codes
 	if !utils.IsInArray(to, opts) {
 		return fmt.Errorf(
 			fmt.Sprintf(
-				`'%s' not in language options
-Run 'deepl -L' to see available language codes
+				`invalid language code on target ('%s')
+Run 'deepl -L,--languages' to get a list of available languages and codes
 `,
 				to,
 			),
@@ -104,43 +69,7 @@ var webCMD = &cobra.Command{
 	Long:  "translate string",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		langOpts := []string{
-			"ar",
-			"bg",
-			"zh",
-			"zh-hans",
-			"zh-hant",
-			"cs",
-			"da",
-			"nl",
-			"en",
-			"en-gb",
-			"en-us",
-			"et",
-			"fi",
-			"fr",
-			"de",
-			"el",
-			"hu",
-			"id",
-			"it",
-			"ja",
-			"ko",
-			"lv",
-			"lt",
-			"nb",
-			"pl",
-			"pt-pt",
-			"pt-br",
-			"ro",
-			"ru",
-			"sk",
-			"sl",
-			"es",
-			"sv",
-			"tr",
-			"uk",
-		}
+		langOpts := utils.GetLanguageCodes()
 		err := checkLangs(from, to, langOpts)
 		if err != nil {
 			return err
