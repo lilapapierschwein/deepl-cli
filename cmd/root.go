@@ -6,13 +6,11 @@ import (
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 	"os"
-	"strings"
 )
 
 const deeplUrl string = "https://deepl.com/en/translator"
 
-// const userTier = utils.UserTierFree
-
+var displayVersion bool
 var showLangs bool
 var showTiers bool
 var rootCMD = &cobra.Command{
@@ -23,7 +21,10 @@ var rootCMD = &cobra.Command{
 		var langs []string = utils.GetAvailableLanguages()
 		var tiers []string = utils.GetUserTiersAndLimits()
 
-		if showLangs {
+		if displayVersion {
+			deeplVersion := utils.GetVersion()
+			fmt.Println(deeplVersion)
+		} else if showLangs {
 			for _, l := range langs {
 				fmt.Println(l)
 			}
@@ -44,69 +45,10 @@ func Execute() {
 	}
 }
 
-func checkLangs(from string, to string, opts []string) error {
-	if !utils.IsInArray(from, opts) {
-		return fmt.Errorf(
-			"%s", fmt.Sprintf(
-				`invalid language code on source ('%s').
-run 'deepl -L,--languages' to get a list of available languages and corresponding codes.
-`,
-				from,
-			),
-		)
-	}
-	if !utils.IsInArray(to, opts) {
-		return fmt.Errorf(
-			"%s", fmt.Sprintf(
-				`invalid language code on target ('%s').
-run 'deepl -L,--languages' to get a list of available languages and corresponding codes.
-`,
-				to,
-			),
-		)
-	}
-
-	return nil
-}
-
-var from string
-var to string
-var userTier string
-
-var translateCMD = &cobra.Command{
-	Use:   "translate",
-	Short: "translate string",
-	Long:  "translate string",
-	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		langOpts := utils.GetLanguageCodes()
-		err := checkLangs(from, to, langOpts)
-		if err != nil {
-			return err
-		}
-
-		text := args[0]
-
-		usrTier, err := utils.ParseUserTier(userTier)
-		if err != nil {
-			return err
-		}
-
-		textFormatted := utils.FormatText(text, usrTier)
-
-		target := []string{deeplUrl, "#", from, "/", to, "/", textFormatted}
-		var targetUrl string = strings.Join(target, "")
-
-		browser.OpenURL(targetUrl)
-
-		return nil
-	},
-}
-
-// TODO: update usage strings
 func init() {
-	rootCMD.Flags().BoolVarP(&showLangs, "languages", "L", false, "Display available languages")
-	rootCMD.Flags().BoolVarP(&showTiers, "user-tiers", "T", false, "Display user tiers and limits")
+	rootCMD.Flags().BoolVarP(&displayVersion, "version", "V", false, "Display version and exit.")
+	rootCMD.Flags().BoolVarP(&showLangs, "languages", "L", false, "Display available languages.")
+	rootCMD.Flags().BoolVarP(&showTiers, "user-tiers", "T", false, "Display user tiers and limits.")
 	translateCMD.Flags().StringVarP(&from, "from", "F", "en", "Language to translate from")
 	translateCMD.Flags().StringVarP(&to, "to", "T", "de", "Language to translate to")
 	translateCMD.Flags().StringVarP(&userTier, "user-tier", "U", "free", "Language to translate to")
