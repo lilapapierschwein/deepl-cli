@@ -11,17 +11,25 @@ import (
 
 const deeplUrl string = "https://deepl.com/en/translator"
 
+// const userTier = utils.UserTierFree
+
 var showLangs bool
+var showTiers bool
 var rootCMD = &cobra.Command{
 	Use:   "deepl",
 	Short: "interact with deepl via cli",
 	Long:  "interact with deepl via cli",
 	Run: func(cmd *cobra.Command, args []string) {
 		var langs []string = utils.GetAvailableLanguages()
+		var tiers []string = utils.GetUserTiersAndLimits()
 
 		if showLangs {
-			for _, v := range langs {
-				fmt.Println(v)
+			for _, l := range langs {
+				fmt.Println(l)
+			}
+		} else if showTiers {
+			for _, t := range tiers {
+				fmt.Println(t)
 			}
 		} else {
 			browser.OpenURL(deeplUrl)
@@ -39,7 +47,7 @@ func Execute() {
 func checkLangs(from string, to string, opts []string) error {
 	if !utils.IsInArray(from, opts) {
 		return fmt.Errorf(
-			fmt.Sprintf(
+			"%s", fmt.Sprintf(
 				`invalid language code on source ('%s')
 Run 'deepl -L,--languages' to get a list of available languages and codes
 `,
@@ -49,7 +57,7 @@ Run 'deepl -L,--languages' to get a list of available languages and codes
 	}
 	if !utils.IsInArray(to, opts) {
 		return fmt.Errorf(
-			fmt.Sprintf(
+			"%s", fmt.Sprintf(
 				`invalid language code on target ('%s')
 Run 'deepl -L,--languages' to get a list of available languages and codes
 `,
@@ -63,6 +71,8 @@ Run 'deepl -L,--languages' to get a list of available languages and codes
 
 var from string
 var to string
+var userTier string
+
 var webCMD = &cobra.Command{
 	Use:   "translate",
 	Short: "translate string",
@@ -76,9 +86,15 @@ var webCMD = &cobra.Command{
 		}
 
 		text := args[0]
-		textEscaped := utils.UrlEscape(text)
 
-		target := []string{deeplUrl, "#", from, "/", to, "/", textEscaped}
+		usrTier, err := utils.ParseUserTier(userTier)
+		if err != nil {
+			return err
+		}
+
+		textFormatted := utils.FormatText(text, usrTier)
+
+		target := []string{deeplUrl, "#", from, "/", to, "/", textFormatted}
 		var targetUrl string = strings.Join(target, "")
 
 		browser.OpenURL(targetUrl)
@@ -90,7 +106,9 @@ var webCMD = &cobra.Command{
 // TODO: update usage strings
 func init() {
 	rootCMD.Flags().BoolVarP(&showLangs, "languages", "L", false, "Display available languages")
+	rootCMD.Flags().BoolVarP(&showTiers, "user-tiers", "T", false, "Display user tiers and limits")
 	webCMD.Flags().StringVarP(&from, "from", "F", "en", "Language to translate from")
 	webCMD.Flags().StringVarP(&to, "to", "T", "de", "Language to translate to")
+	webCMD.Flags().StringVarP(&userTier, "user-tier", "U", "free", "Language to translate to")
 	rootCMD.AddCommand(webCMD)
 }

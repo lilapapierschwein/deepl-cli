@@ -1,6 +1,9 @@
 package utils
 
-import "strings"
+import (
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+)
 
 func IsInArray(val string, arr []string) bool {
 	var isInArr bool = false
@@ -16,22 +19,9 @@ func IsInArray(val string, arr []string) bool {
 	return isInArr
 }
 
-func getUrlEscapes() map[string]string {
-	urlEscapes := map[string]string{
-		"/":  "\\/",
-		"\n": "%0D%0A",
-	}
+func formatNumberSep(num int) string {
+	p := message.NewPrinter(language.English)
+	numberFormatted := p.Sprintf("%d", num)
 
-	return urlEscapes
-}
-
-func UrlEscape(text string) string {
-	urlEscapes := getUrlEscapes()
-	stringEscaped := text
-
-	for c, e := range urlEscapes {
-		stringEscaped = strings.ReplaceAll(stringEscaped, c, e)
-	}
-
-	return stringEscaped
+	return numberFormatted
 }
