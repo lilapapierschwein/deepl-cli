@@ -110,7 +110,7 @@ func GetUserTiersAndLimits() []string {
 	userTierHelpNote := fmt.Sprintf(
 		`
 please note, that you must be logged into deepl in your web browser 
-for elevated limits (%s & %s tier) to apply correctly. 
+for elevated limits (%s- & %s-tier) to apply correctly. 
 
 *character limitations for deepl web may be subject change`,
 		"free",
