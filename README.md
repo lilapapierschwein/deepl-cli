@@ -6,11 +6,15 @@ a command line utility to interact with deepl (web)
 
 ```sh
 # clone the repo
-git clone https://github.com/lilapapierschwein/deepl-cli.git $INSTALL_DIRECTORY
+mkdir deepl-cli && cd deepl-cli
+git clone https://github.com/lilapapierschwein/deepl-cli.git .
 
-# cd in to directory and run installer
-cd $INSTALL_DIRECTORY && ./install.sh
+# run installer
+./run/install.sh
 ```
+
+the binary is installed to `/usr/local/bin` by default. to alter this behavior, provide your desired destination as an argument to the install script.
+same goes for all other scripts in `run` (`update.sh` & `uninstall.sh`).
 
 ## usage
 

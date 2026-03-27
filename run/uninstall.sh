@@ -4,7 +4,14 @@ uninstall() {
         return 1
     fi
 
-    local INSTALL_PATH=/usr/local/bin
+    local DEFAULT_INSTALL_PATH=/usr/local/bin
+    local INSTALL_PATH="$1"
+
+    if [[ -z $INSTALL_PATH ]]; then
+        INSTALL_PATH=$(realpath $DEFAULT_INSTALL_PATH)
+    else
+        INSTALL_PATH=$(realpath $INSTALL_PATH)
+    fi
 
     local BIN_NAME="deepl"
     local BIN_PATH=$INSTALL_PATH/$BIN_NAME
@@ -21,4 +28,4 @@ uninstall() {
     echo "application successfully uninstalled (binary removed) from $BIN_PATH"
 }
 
-uninstall
+uninstall $@
