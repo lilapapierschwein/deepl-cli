@@ -73,7 +73,7 @@ var from string
 var to string
 var userTier string
 
-var webCMD = &cobra.Command{
+var translateCMD = &cobra.Command{
 	Use:   "translate",
 	Short: "translate string",
 	Long:  "translate string",
@@ -107,8 +107,8 @@ var webCMD = &cobra.Command{
 func init() {
 	rootCMD.Flags().BoolVarP(&showLangs, "languages", "L", false, "Display available languages")
 	rootCMD.Flags().BoolVarP(&showTiers, "user-tiers", "T", false, "Display user tiers and limits")
-	webCMD.Flags().StringVarP(&from, "from", "F", "en", "Language to translate from")
-	webCMD.Flags().StringVarP(&to, "to", "T", "de", "Language to translate to")
-	webCMD.Flags().StringVarP(&userTier, "user-tier", "U", "free", "Language to translate to")
-	rootCMD.AddCommand(webCMD)
+	translateCMD.Flags().StringVarP(&from, "from", "F", "en", "Language to translate from")
+	translateCMD.Flags().StringVarP(&to, "to", "T", "de", "Language to translate to")
+	translateCMD.Flags().StringVarP(&userTier, "user-tier", "U", "free", "Language to translate to")
+	rootCMD.AddCommand(translateCMD)
 }
