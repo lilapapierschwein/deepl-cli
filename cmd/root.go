@@ -48,8 +48,8 @@ func checkLangs(from string, to string, opts []string) error {
 	if !utils.IsInArray(from, opts) {
 		return fmt.Errorf(
 			"%s", fmt.Sprintf(
-				`invalid language code on source ('%s')
-Run 'deepl -L,--languages' to get a list of available languages and codes
+				`invalid language code on source ('%s').
+run 'deepl -L,--languages' to get a list of available languages and corresponding codes.
 `,
 				from,
 			),
@@ -58,8 +58,8 @@ Run 'deepl -L,--languages' to get a list of available languages and codes
 	if !utils.IsInArray(to, opts) {
 		return fmt.Errorf(
 			"%s", fmt.Sprintf(
-				`invalid language code on target ('%s')
-Run 'deepl -L,--languages' to get a list of available languages and codes
+				`invalid language code on target ('%s').
+run 'deepl -L,--languages' to get a list of available languages and corresponding codes.
 `,
 				to,
 			),
