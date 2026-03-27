@@ -25,7 +25,13 @@ same goes for all other scripts in `run` (`update.sh` & `uninstall.sh`).
   - powershell
   - zsh
 
-- use
+it is recommended to source completions in your shell init file (e.g. `.bashrc`, `.zshrc`, ...).
+to do this, add the following line to your shell init file:
+
+```sh
+# example: zsh
+eval "$(deepl completion zsh)"; compdef _deepl deepl
+```
 
 ## motivation
 
