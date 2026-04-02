@@ -70,3 +70,5 @@ echo "make sure $install_path is in \$PATH. to add run:"
 echo "  \`export PATH=\$PATH:$install_path\`"
 echo ""
 echo "run \`deepl --help\` for info on usage and shell completions"
+
+exit 0
