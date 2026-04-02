@@ -1,74 +1,74 @@
-update_deepl_cli() {
-    if [[ $EUID -ne 0 ]]; then
-        echo "script must be run as root!"
-        return 1
-    fi
+#!bin/bash
 
-    local GO_BIN=/usr/local/go/bin/go
-    if [[ ! -x $GO_BIN ]]; then
-        echo "go executable not found at ${GO_BIN%%/bin/go} (${GO_BIN%%/go}). cancelled."
-        return 1
-    fi
+# check for root/sudo
+if [[ $EUID -ne 0 ]]; then
+    echo "script must be run as root!"
+    exit 1
+fi
 
-    local DEFAULT_INSTALL_PATH=/usr/local/bin
-    local INSTALL_PATH="$1"
+# verify go installation & get binary
+go_bin=/usr//go/bin/go
+if [[ ! -x $go_bin ]]; then
+    echo "go executable not found at ${go_bin%%/bin/go} (${go_bin%%/go}). cancelled."
+    exit 1
+fi
 
-    if [[ -z $INSTALL_PATH ]]; then
-        INSTALL_PATH=$(realpath $DEFAULT_INSTALL_PATH)
+default_install_path=/usr//bin
+install_path="$1"
+
+if [[ -z $install_path ]]; then
+    install_path=$(realpath $default_install_path)
+else
+    install_path=$(realpath $install_path)
+fi
+
+bin_name="deepl"
+bin_path=$install_path/$bin_name
+
+project_base_name="deepl-cli"
+main_file_name="deepl.go"
+
+project_path=$PWD
+while true; do
+    if [[ "$(basename $project_path)" != "$project_base_name" ]]; then
+        project_path="${project_path%/*}"
+    elif [[ "$(basename $project_path)" = "home" ]]; then
+        echo "unable to find project's base directory ($project_base_name)."
+        echo "operation cancelled."
+        exit 1
     else
-        INSTALL_PATH=$(realpath $INSTALL_PATH)
+        project_path=$(realpath $project_path)
+        break
     fi
+done
 
-    local BIN_NAME="deepl"
-    local BIN_PATH=$INSTALL_PATH/$BIN_NAME
-
-    local PROJECT_BASE_NAME="deepl-cli"
-    local MAIN_FILE_NAME="deepl.go"
-
-    local PROJECT_PATH=$PWD
-    while true; do
-        if [[ "$(basename $PROJECT_PATH)" != "$PROJECT_BASE_NAME" ]]; then
-            PROJECT_PATH="${PROJECT_PATH%/*}"
-        elif [[ "$(basename $PROJECT_PATH)" = "home" ]]; then
-            echo "unable to find project's base directory ($PROJECT_BASE_NAME)."
-            echo "operation cancelled."
-            return 1
-        else
-            PROJECT_PATH=$(realpath $PROJECT_PATH)
-            break
-        fi
-    done
-
-    if [[ ! -x $BIN_PATH ]]; then
-        echo "error: binary not found at $BIN_PATH"
-        echo "it seems the application has not yet been installed."
-        echo ""
-        echo "*to build and install, run the script at ./run/install.sh."
-        return 1
-    fi
-
-    echo "updating deepl-cli..."
+if [[ ! -x $bin_path ]]; then
+    echo "error: binary not found at $bin_path"
+    echo "it seems the application has not yet been installed."
     echo ""
+    echo "*to build and install, run the script at ./run/install.sh."
+    exit 1
+fi
 
-    cd $PROJECT_PATH
+echo "updating deepl-cli..."
+echo ""
 
-    echo "rebuilding binary from file $PROJECT_PATH/$MAIN_FILE_NAME..."
-    $GO_BIN build $MAIN_FILE_NAME
-    echo "binary rebuilt at $PROJECT_PATH/$BIN_NAME"
-    echo ""
+cd $project_path
 
-    echo "removing old binary from $BIN_PATH..."
-    rm $BIN_PATH
-    echo "old binary removed"
-    echo ""
+echo "rebuilding binary from file $project_path/$main_file_name..."
+$go_bin build $main_file_name
+echo "binary rebuilt at $project_path/$bin_name"
+echo ""
 
-    echo "linking updated binary..."
-    ln -s $PROJECT_PATH/$BIN_NAME $BIN_PATH
-    echo "updated binary linked to $BIN_PATH"
-    echo ""
+echo "removing old binary from $bin_path..."
+rm $bin_path
+echo "old binary removed"
+echo ""
 
-    echo "the application was updated successfully"
-    echo "run \`deepl --help\` for info on usage and shell completions"
-}
+echo "linking updated binary..."
+ln -s $project_path/$bin_name $bin_path
+echo "updated binary linked to $bin_path"
+echo ""
 
-update_deepl_cli $@
+echo "the application was updated successfully"
+echo "run \`deepl --help\` for info on usage and shell completions"

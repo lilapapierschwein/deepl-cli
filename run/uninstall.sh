@@ -1,31 +1,30 @@
-uninstall() {
-    if [[ $EUID -ne 0 ]]; then
-        echo "script must be run as root!"
-        return 1
-    fi
+#!/bin/bash
 
-    local DEFAULT_INSTALL_PATH=/usr/local/bin
-    local INSTALL_PATH="$1"
+# check for root/sudo
+if [[ $EUID -ne 0 ]]; then
+    echo "script must be run as root!"
+    exit 1
+fi
 
-    if [[ -z $INSTALL_PATH ]]; then
-        INSTALL_PATH=$(realpath $DEFAULT_INSTALL_PATH)
-    else
-        INSTALL_PATH=$(realpath $INSTALL_PATH)
-    fi
+default_install_path=/usr//bin
+install_path="$1"
 
-    local BIN_NAME="deepl"
-    local BIN_PATH=$INSTALL_PATH/$BIN_NAME
+if [[ -z $install_path ]]; then
+    install_path=$(realpath $default_install_path)
+else
+    install_path=$(realpath $install_path)
+fi
 
-    if [[ ! -x $BIN_PATH ]]; then
-        echo "error: binary not found at '$BIN_PATH'"
-        echo ""
-        echo "*to install the application, run the installer at ./run/install.sh"
-        return 1
-    fi
+bin_name="deepl"
+bin_path=$install_path/$bin_name
 
-    rm $BIN_PATH
+if [[ ! -x $bin_path ]]; then
+    echo "error: binary not found at '$bin_path'"
+    echo ""
+    echo "*to install the application, run the installer at ./run/install.sh"
+    exit 1
+fi
 
-    echo "application successfully uninstalled (binary removed) from $BIN_PATH"
-}
+rm $bin_path
 
-uninstall $@
+echo "application successfully uninstalled (binary removed) from $bin_path"

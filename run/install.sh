@@ -1,74 +1,72 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-install_deepl_cli() {
-    if [[ $EUID -ne 0 ]]; then
-        echo "script must be run as root!"
-        return 1
-    fi
+# check for root/sudo
+if [[ $EUID -ne 0 ]]; then
+    echo "script must be run as root!"
+    exit 1
+fi
 
-    local GO_BIN=/usr/local/go/bin/go
-    if [[ ! -x $GO_BIN ]]; then
-        echo "go executable not found at ${GO_BIN%%/bin/go} (${GO_BIN%%/go}). cancelled."
-        return 1
-    fi
+# verify go installation & get binary
+go_bin=/usr//go/bin/go
+if [[ ! -x $go_bin ]]; then
+    echo "go executable not found at ${go_bin%%/bin/go} (${go_bin%%/go}). cancelled."
+    exit 1
+fi
 
-    local DEFAULT_INSTALL_PATH=/usr/local/bin
-    local INSTALL_PATH="$1"
+default_install_path=/usr//bin
+install_path="$1"
 
-    if [[ -z $INSTALL_PATH ]]; then
-        INSTALL_PATH=$(realpath $DEFAULT_INSTALL_PATH)
+if [[ -z $install_path ]]; then
+    install_path=$(realpath $default_install_path)
+else
+    install_path=$(realpath $install_path)
+fi
+
+bin_name="deepl"
+bin_path=$install_path/$bin_name
+
+project_base_name="deepl-cli"
+main_file_name=deepl.go
+
+project_path=$PWD
+while true; do
+    if [[ "$(basename $project_path)" != "$project_base_name" ]]; then
+        project_path="${project_path%/*}"
+    elif [[ "$(basename $project_path)" = "home" ]]; then
+        echo "unable to find project's base directory ($project_base_name)."
+        echo "operation canceled."
+        exit 1
     else
-        INSTALL_PATH=$(realpath $INSTALL_PATH)
+        project_path=$(realpath $project_path)
+        break
     fi
+done
 
-    local BIN_NAME="deepl"
-    local BIN_PATH=$INSTALL_PATH/$BIN_NAME
-
-    local PROJECT_BASE_NAME="deepl-cli"
-    local MAIN_FILE_NAME=deepl.go
-
-    local PROJECT_PATH=$PWD
-    while true; do
-        if [[ "$(basename $PROJECT_PATH)" != "$PROJECT_BASE_NAME" ]]; then
-            PROJECT_PATH="${PROJECT_PATH%/*}"
-        elif [[ "$(basename $PROJECT_PATH)" = "home" ]]; then
-            echo "unable to find project's base directory ($PROJECT_BASE_NAME)."
-            echo "operation cancelled."
-            return 1
-        else
-            PROJECT_PATH=$(realpath $PROJECT_PATH)
-            break
-        fi
-    done
-
-    if [[ -x "$BIN_PATH" ]]; then
-        echo "error: the application is already installed at $BIN_PATH"
-        echo ""
-        echo "*to update, run the updater at ./run/update.sh"
-        echo "*to uninstall, run the uninstall script at ./run/uninstall.sh"
-        return 1
-    fi
-
-    echo "installing deepl-cli..."
+if [[ -x "$bin_path" ]]; then
+    echo "error: the application is already installed at $bin_path"
     echo ""
+    echo "*to update, run the updater at ./run/update.sh"
+    echo "*to uninstall, run the uninstall script at ./run/uninstall.sh"
+    exit 1
+fi
 
-    cd $PROJECT_PATH
+echo "installing deepl-cli..."
+echo ""
 
-    echo "building binary from file $PROJECT_PATH/$MAIN_FILE_NAME..."
-    $GO_BIN build $MAIN_FILE_NAME
-    echo "binary built at $PROJECT_PATH/$BIN_NAME"
-    echo ""
+cd $project_path
 
-    echo "linking binary..."
-    ln -s $PROJECT_PATH/$BIN_NAME $BIN_PATH
-    echo "binary linked to $BIN_PATH"
-    echo ""
+echo "building binary from file $project_path/$main_file_name..."
+$go_bin build $main_file_name
+echo "binary built at $project_path/$bin_name"
+echo ""
 
-    echo "application successfully installed at $BIN_PATH."
-    echo "make sure $INSTALL_PATH is in \$PATH. to add run:"
-    echo "  \`export PATH=\$PATH:$INSTALL_PATH\`"
-    echo ""
-    echo "run \`deepl --help\` for info on usage and shell completions"
-}
+echo "linking binary..."
+ln -s $project_path/$bin_name $bin_path
+echo "binary linked to $bin_path"
+echo ""
 
-install_deepl_cli $@
+echo "application successfully installed at $bin_path."
+echo "make sure $install_path is in \$PATH. to add run:"
+echo "  \`export PATH=\$PATH:$install_path\`"
+echo ""
+echo "run \`deepl --help\` for info on usage and shell completions"
