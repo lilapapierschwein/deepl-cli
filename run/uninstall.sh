@@ -28,3 +28,5 @@ fi
 rm $bin_path
 
 echo "application successfully uninstalled (binary removed) from $bin_path"
+
+exit 0
