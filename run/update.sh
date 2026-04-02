@@ -73,6 +73,7 @@ elif [[ "$git_status_summary" =~ ^((Your branch is behind.+/)([A-Za-z]+)\' by ([
 
     echo "$updates_count updates found on '$branch_verified' branch. starting update..."
 else
+    # this is a test comment
     echo "WTF?!"
     exit 1
 fi
