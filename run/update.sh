@@ -72,3 +72,5 @@ echo ""
 
 echo "the application was updated successfully"
 echo "run \`deepl --help\` for info on usage and shell completions"
+
+exit 0
