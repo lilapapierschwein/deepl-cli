@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 # check for root/sudo
 if [[ $EUID -ne 0 ]]; then
@@ -7,13 +7,13 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # verify go installation & get binary
-go_bin=/usr//go/bin/go
+go_bin=/usr/local/go/bin/go
 if [[ ! -x $go_bin ]]; then
     echo "go executable not found at ${go_bin%%/bin/go} (${go_bin%%/go}). cancelled."
     exit 1
 fi
 
-default_install_path=/usr//bin
+default_install_path=/usr/local/bin
 install_path="$1"
 
 if [[ -z $install_path ]]; then
@@ -50,10 +50,36 @@ if [[ ! -x $bin_path ]]; then
     exit 1
 fi
 
-echo "updating deepl-cli..."
+echo "starting deepl-cli update..."
 echo ""
 
 cd $project_path
+
+# check remote origin for updates
+branch="main"
+echo "checking for updates on '$branch' branch..."
+
+git fetch origin $branch >/dev/null 2>&1
+git_status="$(git status)"
+git_status_summary="$(echo "$git_status" | sed -n '2 p')"
+
+if [[ "$git_status_summary" = "Your branch is up to date with 'origin/$branch'." ]]; then
+    echo "no updates found. '$branch' is up to date."
+    exit 0
+elif [[ "$git_status_summary" =~ ^((Your branch is behind.+/)([A-Za-z]+)\' by ([0-9]+).+(can be fast-forwarded){1}.)$ ]]; then
+    updates_count="${BASH_REMATCH[4]}"
+    branch_verified="${BASH_REMATCH[3]}"
+    fast_forward="${BASH_REMATCH[5]}"
+
+    echo "$updates_count updates found on '$branch_verified' branch. starting update..."
+else
+    echo "WTF?!"
+    exit 1
+fi
+
+echo "pulling changes from origin/$branch_verified..."
+git pull origin $branch >/dev/null 2>&1
+echo "download complete"
 
 echo "rebuilding binary from file $project_path/$main_file_name..."
 $go_bin build $main_file_name
